@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MenuSite — Restaurant Website Generator</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0a08;--bg2:#131310;--bg3:#1c1c18;
+  --gold:#d4a84b;--gold-light:#e8c97a;
+  --cream:#f5f0e8;--cream-muted:#b8b0a0;
+  --green:#27ae60;
+  --border:rgba(212,168,75,0.2);--border-strong:rgba(212,168,75,0.5);
+}
+body{background:var(--bg);color:var(--cream);font-family:'DM Sans',sans-serif;font-weight:300;min-height:100vh;overflow-x:hidden}
+.header{padding:1.5rem 2.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.logo{font-family:'Playfair Display',serif;font-size:1.5rem;color:var(--gold)}
+.logo span{font-style:italic;color:var(--cream)}
+.badge{font-size:11px;background:rgba(212,168,75,0.12);border:1px solid var(--border-strong);color:var(--gold);padding:4px 12px;border-radius:20px;letter-spacing:.06em;text-transform:uppercase}
+.main{max-width:820px;margin:0 auto;padding:3rem 1.5rem}
+.steps{display:flex;align-items:center;margin-bottom:3rem}
+.step{display:flex;align-items:center;gap:8px;font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--cream-muted);transition:color .3s;white-space:nowrap}
+.step.active{color:var(--gold)}.step.done{color:var(--green)}
+.step-num{width:26px;height:26px;border-radius:50%;border:1px solid currentColor;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;transition:all .3s}
+.step.active .step-num{background:var(--gold);color:var(--bg);border-color:var(--gold)}
+.step.done .step-num{background:var(--green);color:#fff;border-color:var(--green)}
+.step-line{flex:1;height:1px;background:var(--border);margin:0 10px}
+.panel{display:none}.panel.active{display:block;animation:fadeIn .4s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.panel-title{font-family:'Playfair Display',serif;font-size:2rem;color:var(--cream);margin-bottom:.4rem;line-height:1.2}
+.panel-title em{color:var(--gold);font-style:italic}
+.panel-sub{color:var(--cream-muted);font-size:14px;margin-bottom:2rem;line-height:1.7}
+.sbox{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:1.25rem;margin-bottom:1rem}
+.sbox-title{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--gold);margin-bottom:1rem;display:flex;align-items:center;gap:7px}
+.sbox-title::before{content:'';width:5px;height:5px;background:var(--gold);border-radius:50%;flex-shrink:0}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+.field{display:flex;flex-direction:column;gap:5px}
+.field.full{grid-column:1/-1}
+label{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--cream-muted);font-weight:500}
+input,select,textarea{background:var(--bg3);border:1px solid var(--border);border-radius:5px;color:var(--cream);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:300;padding:10px 12px;outline:none;transition:border-color .2s;width:100%}
+input:focus,select:focus,textarea:focus{border-color:var(--gold)}
+input::placeholder,textarea::placeholder{color:rgba(245,240,232,.25)}
+select option{background:var(--bg3)}
+textarea{resize:vertical;min-height:130px;line-height:1.6}
+.key-note{font-size:11px;color:var(--cream-muted);margin-top:.6rem;line-height:1.6}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:13px 24px;border-radius:5px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;letter-spacing:.04em;cursor:pointer;border:none;transition:all .2s}
+.btn-primary{background:var(--gold);color:var(--bg);width:100%;padding:15px;font-size:15px}
+.btn-primary:hover{background:var(--gold-light);transform:translateY(-1px)}
+.btn-outline{background:transparent;border:1px solid var(--border-strong);color:var(--gold)}
+.btn-outline:hover{background:rgba(212,168,75,.1)}
+.btn-green{background:var(--green);color:#fff;width:100%;padding:15px;font-size:15px}
+.btn-green:hover{background:#2ecc71;transform:translateY(-1px)}
+.divider{border:none;border-top:1px solid var(--border);margin:1.5rem 0}
+.error-box{background:rgba(192,57,43,.12);border:1px solid rgba(192,57,43,.4);border-radius:5px;padding:11px 14px;font-size:13px;color:#e74c3c;margin-bottom:1rem;display:none;line-height:1.6}
+.gen-wrap{text-align:center;padding:3rem 0}
+.spinner{width:56px;height:56px;border:2px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 1.75rem}
+@keyframes spin{to{transform:rotate(360deg)}}
+.gen-title{font-family:'Playfair Display',serif;font-size:1.7rem;margin-bottom:.6rem}
+.gen-status{color:var(--gold);font-size:13px;min-height:20px}
+.gen-steps{margin-top:1.75rem;display:flex;flex-direction:column;gap:10px;max-width:320px;margin-left:auto;margin-right:auto;text-align:left}
+.gen-step{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--cream-muted);transition:color .3s}
+.gen-step.active{color:var(--cream)}.gen-step.done{color:var(--green)}
+.gen-dot{width:7px;height:7px;border-radius:50%;background:currentColor;flex-shrink:0}
+.prev-toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;gap:1rem;flex-wrap:wrap}
+.prev-info h2{font-family:'Playfair Display',serif;font-size:1.4rem;margin-bottom:3px}
+.prev-info p{font-size:12px;color:var(--cream-muted)}
+.prev-actions{display:flex;gap:8px}
+.frame-wrap{border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:1.25rem}
+.frame-bar{background:var(--bg3);padding:9px 14px;display:flex;align-items:center;gap:7px;border-bottom:1px solid var(--border)}
+.dot{width:9px;height:9px;border-radius:50%}
+.dot-r{background:#ff5f57}.dot-y{background:#febc2e}.dot-g{background:#28c840}
+.frame-url{flex:1;background:var(--bg2);border-radius:3px;padding:3px 10px;font-size:11px;color:var(--cream-muted);font-family:monospace}
+#previewFrame{width:100%;height:580px;border:none;display:block}
+.pay-wrap{max-width:460px;margin:0 auto}
+.price-card{background:var(--bg2);border:1px solid var(--border-strong);border-radius:10px;padding:1.75rem;text-align:center;margin-bottom:1.25rem;position:relative;overflow:hidden}
+.price-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--gold),var(--gold-light))}
+.price-lbl{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--cream-muted);margin-bottom:.6rem}
+.price-amt{font-family:'Playfair Display',serif;font-size:3.2rem;color:var(--gold);line-height:1;margin-bottom:.2rem}
+.price-sup{font-size:1.1rem;vertical-align:super}
+.price-desc{font-size:12px;color:var(--cream-muted);margin-bottom:1.25rem}
+.price-features{list-style:none;text-align:left;display:flex;flex-direction:column;gap:9px}
+.price-features li{font-size:13px;color:var(--cream-muted);display:flex;align-items:center;gap:9px}
+.price-features li::before{content:'✓';color:var(--green);font-weight:700;flex-shrink:0}
+.pay-note{font-size:11px;color:var(--cream-muted);text-align:center;margin-top:.75rem;line-height:1.65}
+.success-wrap{text-align:center;padding:2rem 0}
+.success-icon{width:76px;height:76px;border-radius:50%;background:rgba(39,174,96,.14);border:2px solid var(--green);display:flex;align-items:center;justify-content:center;font-size:1.9rem;margin:0 auto 1.25rem;animation:pop .5s cubic-bezier(.175,.885,.32,1.275)}
+@keyframes pop{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+.success-title{font-family:'Playfair Display',serif;font-size:1.9rem;margin-bottom:.4rem}
+.success-sub{color:var(--cream-muted);font-size:14px;margin-bottom:1.75rem;line-height:1.7}
+.dl-btn{display:inline-flex;align-items:center;gap:9px;background:var(--gold);color:var(--bg);padding:14px 32px;border-radius:6px;font-size:15px;font-weight:500;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;transition:all .2s}
+.dl-btn:hover{background:var(--gold-light);transform:translateY(-2px)}
+.restart-btn{display:block;margin:.75rem auto 0;background:none;border:none;color:var(--cream-muted);font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;text-decoration:underline}
+@media(max-width:600px){.header{padding:1rem 1.25rem}.main{padding:1.5rem 1rem}.grid2{grid-template-columns:1fr}.prev-toolbar{flex-direction:column;align-items:flex-start}}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="logo">Menu<span>Site</span></div>
+  <div class="badge">Restaurant Generator</div>
+</header>
+
+<main class="main">
+  <div class="steps">
+    <div class="step active" id="s1"><div class="step-num">1</div> Setup</div>
+    <div class="step-line"></div>
+    <div class="step" id="s2"><div class="step-num">2</div> Generate</div>
+    <div class="step-line"></div>
+    <div class="step" id="s3"><div class="step-num">3</div> Preview</div>
+    <div class="step-line"></div>
+    <div class="step" id="s4"><div class="step-num">4</div> Purchase</div>
+  </div>
+
+  <!-- PANEL 1 -->
+  <div class="panel active" id="panel1">
+    <h1 class="panel-title">Generate a <em>stunning</em><br>restaurant website</h1>
+    <p class="panel-sub">Fill in the details and paste real Google reviews. Claude turns authentic customer words into a beautiful, ready-to-publish website in seconds.</p>
+
+    <div id="errorBox" class="error-box"></div>
+
+    <div class="sbox">
+      <div class="sbox-title">API Keys — saved in your browser, never shared</div>
+      <div class="grid2">
+        <div class="field">
+          <label>Anthropic API Key ✦</label>
+          <input type="password" id="anthropicKey" placeholder="sk-ant-..." autocomplete="off">
+        </div>
+        <div class="field">
+          <label>Razorpay Key ID</label>
+          <input type="password" id="razorpayKey" placeholder="rzp_test_..." autocomplete="off">
+        </div>
+        <div class="field full">
+          <label>Your Business Name (shown on Razorpay checkout)</label>
+          <input type="text" id="bizName" placeholder="MenuSite" autocomplete="off">
+        </div>
+      </div>
+      <p class="key-note">🔒 Keys are stored in your browser only. Your Anthropic key is sent securely to your own backend to call Claude.</p>
+    </div>
+
+    <div class="sbox">
+      <div class="sbox-title">Restaurant Details</div>
+      <div class="grid2">
+        <div class="field">
+          <label>Restaurant Name ✦</label>
+          <input type="text" id="restaurantName" placeholder="e.g. The Bombay Canteen">
+        </div>
+        <div class="field">
+          <label>City ✦</label>
+          <input type="text" id="restaurantCity" placeholder="e.g. Mumbai">
+        </div>
+        <div class="field full">
+          <label>Address</label>
+          <input type="text" id="restaurantAddress" placeholder="e.g. 4 Mandlik Marg, Colaba, Mumbai 400001">
+        </div>
+        <div class="field">
+          <label>Phone Number</label>
+          <input type="text" id="restaurantPhone" placeholder="+91 98765 43210">
+        </div>
+        <div class="field">
+          <label>Cuisine Type</label>
+          <input type="text" id="cuisineType" placeholder="e.g. North Indian, Italian, Biryani">
+        </div>
+        <div class="field">
+          <label>Google Rating</label>
+          <input type="text" id="restaurantRating" placeholder="e.g. 4.5 stars, 1,200 reviews">
+        </div>
+        <div class="field">
+          <label>Price Range</label>
+          <select id="priceRange">
+            <option value="budget">Budget Friendly</option>
+            <option value="mid" selected>Mid Range</option>
+            <option value="premium">Premium</option>
+            <option value="fine">Fine Dining</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Color Theme</label>
+          <select id="colorTheme">
+            <option value="warm">Warm and Cozy</option>
+            <option value="dark">Elegant Dark</option>
+            <option value="fresh">Fresh and Light</option>
+            <option value="bold">Bold and Modern</option>
+            <option value="minimal">Clean Minimal</option>
+          </select>
+        </div>
+        <div class="field full">
+          <label>Paste Google Reviews Here ✦</label>
+          <textarea id="customerReviews" placeholder="Go to Google Maps, search the restaurant, scroll to Reviews, copy and paste 5 to 10 reviews here.
+
+Example:
+Amazing food, the butter chicken was absolutely outstanding! — Rahul S. 5 stars
+Best place in the city for a family dinner. Staff was so welcoming. — Priya M. 5 stars
+Loved the ambiance. The biryani is top notch, will definitely come back! — Ahmed K. 4 stars"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="sbox" style="margin-bottom:1.5rem">
+      <div class="sbox-title">How to copy Google reviews (2 minutes)</div>
+      <ol style="font-size:13px;color:var(--cream-muted);line-height:2.3;padding-left:1.1rem">
+        <li>Open <strong style="color:var(--cream)">maps.google.com</strong> in your browser</li>
+        <li>Search the restaurant name and click on it</li>
+        <li>Scroll down to the <strong style="color:var(--cream)">Reviews</strong> section</li>
+        <li>Copy the text of 5 to 10 reviews and paste into the box above</li>
+      </ol>
+    </div>
+
+    <button class="btn btn-primary" onclick="startGeneration()">✦ Generate Website — Free Preview</button>
+  </div>
+
+  <!-- PANEL 2 -->
+  <div class="panel" id="panel2">
+    <div class="gen-wrap">
+      <div class="spinner"></div>
+      <h2 class="gen-title">Building your website...</h2>
+      <p class="gen-status" id="genStatus">Starting up...</p>
+      <div class="gen-steps">
+        <div class="gen-step" id="gs1"><div class="gen-dot"></div>Reading the reviews</div>
+        <div class="gen-step" id="gs2"><div class="gen-dot"></div>Analyzing what customers love most</div>
+        <div class="gen-step" id="gs3"><div class="gen-dot"></div>Writing authentic copy with Claude</div>
+        <div class="gen-step" id="gs4"><div class="gen-dot"></div>Building the website layout</div>
+        <div class="gen-step" id="gs5"><div class="gen-dot"></div>Final polish</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PANEL 3 -->
+  <div class="panel" id="panel3">
+    <div class="prev-toolbar">
+      <div class="prev-info">
+        <h2 id="previewTitle">Your Website is Ready</h2>
+        <p>Preview below — purchase to download the full HTML file</p>
+      </div>
+      <div class="prev-actions">
+        <button class="btn btn-outline" style="padding:10px 18px;font-size:13px" onclick="goToPanel(1)">Back</button>
+        <button class="btn btn-primary" style="width:auto;padding:10px 22px;font-size:13px" onclick="goToPanel(4)">Purchase Rs.3,999</button>
+      </div>
+    </div>
+    <div class="frame-wrap">
+      <div class="frame-bar">
+        <div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div>
+        <div class="frame-url" id="frameUrl">menusite.app/preview/your-restaurant</div>
+      </div>
+      <iframe id="previewFrame" title="Website Preview"></iframe>
+    </div>
+  </div>
+
+  <!-- PANEL 4 -->
+  <div class="panel" id="panel4">
+    <div class="pay-wrap">
+      <h1 class="panel-title" style="text-align:center;margin-bottom:.4rem">One-time <em>purchase</em></h1>
+      <p class="panel-sub" style="text-align:center;margin-bottom:1.25rem">Pay once, own your website forever. No subscriptions.</p>
+      <div class="price-card">
+        <div class="price-lbl">Complete Website Package</div>
+        <div class="price-amt"><span class="price-sup">Rs.</span>3,999</div>
+        <div class="price-desc">One-time payment — Instant download</div>
+        <ul class="price-features">
+          <li>Full HTML file — yours forever</li>
+          <li>Mobile responsive design</li>
+          <li>Built from your real Google reviews</li>
+          <li>SEO-optimized copy and meta tags</li>
+          <li>Ready to upload to any hosting</li>
+          <li>Free revisions within 7 days</li>
+        </ul>
+      </div>
+      <button class="btn btn-green" onclick="initiatePayment()">Pay Rs.3,999 via Razorpay</button>
+      <p class="pay-note">Accepts UPI, Cards, Net Banking and Wallets.<br>Download link delivered instantly after payment.</p>
+      <button class="btn btn-outline" style="width:100%;margin-top:.6rem" onclick="goToPanel(3)">Back to Preview</button>
+    </div>
+  </div>
+
+  <!-- PANEL 5 -->
+  <div class="panel" id="panel5">
+    <div class="success-wrap">
+      <div class="success-icon">✓</div>
+      <h2 class="success-title">Payment Successful!</h2>
+      <p class="success-sub">Your website is ready to download. Open the HTML file in any browser or upload it to your hosting to go live.</p>
+      <button class="dl-btn" onclick="downloadWebsite()">Download Website HTML</button>
+      <p style="font-size:12px;color:var(--cream-muted);margin-top:1rem">Tip: Drag the file to <strong style="color:var(--gold)">netlify.com/drop</strong> for a free live URL in 30 seconds.</p>
+      <button class="restart-btn" onclick="goToPanel(1)">Generate another restaurant</button>
+    </div>
+  </div>
+</main>
+
+<script>
+let generatedHTML = '';
+let restData = {};
+
+window.addEventListener('load', () => {
+  ['anthropicKey','razorpayKey','bizName'].forEach(id => {
+    const v = localStorage.getItem('ms_' + id);
+    if (v) document.getElementById(id).value = v;
+  });
+});
+
+function saveKeys() {
+  ['anthropicKey','razorpayKey','bizName'].forEach(id => {
+    const v = document.getElementById(id).value.trim();
+    if (v) localStorage.setItem('ms_' + id, v);
+  });
+}
+
+function goToPanel(n) {
+  document.querySelectorAll('.panel').forEach((p,i) => p.classList.toggle('active', i===n-1));
+  for (let i=1;i<=4;i++){
+    const s=document.getElementById('s'+i);
+    s.classList.remove('active','done');
+    if(i<n) s.classList.add('done');
+    else if(i===n) s.classList.add('active');
+  }
+  window.scrollTo(0,0);
+}
+
+function showError(msg) {
+  const b = document.getElementById('errorBox');
+  b.textContent = msg;
+  b.style.display = 'block';
+  window.scrollTo(0,0);
+  setTimeout(() => b.style.display='none', 9000);
+}
+
+function delay(ms){ return new Promise(r=>setTimeout(r,ms)); }
+
+async function startGeneration() {
+  const aKey    = document.getElementById('anthropicKey').value.trim();
+  const name    = document.getElementById('restaurantName').value.trim();
+  const city    = document.getElementById('restaurantCity').value.trim();
+  const reviews = document.getElementById('customerReviews').value.trim();
+
+  if (!aKey)    return showError('Please enter your Anthropic API key.');
+  if (!name)    return showError('Please enter the restaurant name.');
+  if (!city)    return showError('Please enter the city.');
+  if (!reviews) return showError('Please paste some Google reviews — that is what makes the website authentic!');
+
+  saveKeys();
+  restData = {
+    name, city,
+    address:      document.getElementById('restaurantAddress').value.trim(),
+    phone:        document.getElementById('restaurantPhone').value.trim(),
+    cuisine:      document.getElementById('cuisineType').value.trim(),
+    rating:       document.getElementById('restaurantRating').value.trim(),
+    price:        document.getElementById('priceRange').value,
+    theme:        document.getElementById('colorTheme').value,
+    reviews,
+    anthropicKey: aKey
+  };
+  goToPanel(2);
+  await runGeneration();
+}
+
+async function runGeneration() {
+  const setStep = (n,state) => {
+    const el=document.getElementById('gs'+n);
+    el.classList.remove('active','done');
+    el.classList.add(state);
+  };
+  const setStatus = t => document.getElementById('genStatus').textContent = t;
+
+  try {
+    setStep(1,'active'); setStatus('Reading your reviews...');
+    await delay(600); setStep(1,'done');
+
+    setStep(2,'active'); setStatus('Finding patterns in what customers love...');
+    await delay(700); setStep(2,'done');
+
+    setStep(3,'active'); setStatus('Claude is writing your copy...');
+    const copy = await generateCopy(restData);
+    setStep(3,'done');
+
+    setStep(4,'active'); setStatus('Building the website...');
+    await delay(500);
+    generatedHTML = buildWebsite(copy, restData);
+    setStep(4,'done');
+
+    setStep(5,'active'); setStatus('Adding final polish...');
+    await delay(400); setStep(5,'done');
+    setStatus('Done!');
+    await delay(300);
+
+    document.getElementById('previewTitle').textContent = restData.name + ' — Website Ready';
+    document.getElementById('frameUrl').textContent = 'menusite.app/preview/' + restData.name.toLowerCase().replace(/\s+/g,'-');
+    document.getElementById('previewFrame').srcdoc = generatedHTML;
+    goToPanel(3);
+
+  } catch(err) {
+    console.error(err);
+    goToPanel(1);
+    showError('Error: ' + err.message);
+  }
+}
+
+async function generateCopy(data) {
+  const prompt = `You are a world-class restaurant copywriter. Based on the real customer reviews below, write compelling authentic website copy for this restaurant.
+
+RESTAURANT:
+Name: ${data.name}
+City: ${data.city}
+${data.address ? 'Address: '+data.address : ''}
+${data.cuisine ? 'Cuisine: '+data.cuisine : ''}
+${data.rating  ? 'Rating: ' +data.rating  : ''}
+Price: ${data.price}
+
+REAL CUSTOMER REVIEWS:
+${data.reviews}
+
+Return ONLY a raw JSON object with no markdown and no code fences:
+{
+  "headline": "A powerful 6-10 word headline capturing the restaurant essence",
+  "subheadline": "A compelling 15-20 word subheadline based on what customers love most",
+  "about": "3 warm inviting sentences about the restaurant using insights from reviews",
+  "why_choose": ["Specific reason from reviews 10-15 words","Another specific reason","Third reason","Fourth reason"],
+  "testimonials": [
+    {"quote":"Compelling short quote max 20 words","author":"Happy Guest"},
+    {"quote":"Another testimonial focusing on food quality","author":"Loyal Customer"},
+    {"quote":"Third testimonial about ambiance or service","author":"Regular Visitor"}
+  ],
+  "cta_text": "3-5 word call to action",
+  "meta_description": "SEO meta description 140-160 characters",
+  "tags": ["tag1","tag2","tag3","tag4","tag5"]
+}`;
+
+  // Call our own backend — no CORS issues
+  const res = await fetch('/api/generate', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ prompt, apiKey: data.anthropicKey })
+  });
+
+  if (!res.ok) {
+    const e = await res.json().catch(()=>({}));
+    throw new Error(e.error || 'Server error. Please try again.');
+  }
+
+  const result = await res.json();
+  const text = result.text.trim().replace(/```json|```/g,'').trim();
+
+  try {
+    return JSON.parse(text);
+  } catch {
+    throw new Error('Could not parse response. Please try again.');
+  }
+}
+
+function buildWebsite(copy, data) {
+  const themes = {
+    warm:    {bg:'#1a1208',ac:'#d4801a',tx:'#f5e8d0',card:'#2a1e0e',nav:'#0f0a04'},
+    dark:    {bg:'#0a0a08',ac:'#d4a84b',tx:'#f5f0e8',card:'#161612',nav:'#050503'},
+    fresh:   {bg:'#f7fdf4',ac:'#2d7a3a',tx:'#1a2e1c',card:'#eaf7e5',nav:'#1a3320'},
+    bold:    {bg:'#0d0303',ac:'#c0392b',tx:'#f5e8e8',card:'#1a0808',nav:'#080101'},
+    minimal: {bg:'#ffffff',ac:'#2c2c2c',tx:'#1a1a1a',card:'#f5f5f5',nav:'#1a1a1a'}
+  };
+  const t = themes[data.theme]||themes.dark;
+  const whyItems=(copy.why_choose||[]).map(r=>`<div class="wi"><span class="chk">&#10003;</span><span>${r}</span></div>`).join('');
+  const testis=(copy.testimonials||[]).map(tc=>`<div class="tc"><p class="tq">"${tc.quote}"</p><p class="ta">&#8212; ${tc.author}</p></div>`).join('');
+  const tags=(copy.tags||[]).map(tg=>`<span class="tag">${tg}</span>`).join('');
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>${data.name} | ${data.city}</title>
+<meta name="description" content="${copy.meta_description||''}">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:${t.bg};color:${t.tx};font-family:'DM Sans',sans-serif;font-weight:300}
+a{color:inherit;text-decoration:none}
+nav{background:${t.nav};padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:100;border-bottom:1px solid ${t.ac}33}
+.nl{font-family:'Cormorant Garamond',serif;font-size:1.4rem;color:${t.ac}}
+.nm{display:flex;gap:1.5rem;font-size:12px;letter-spacing:.07em;text-transform:uppercase;color:${t.tx}88}
+.nm a:hover{color:${t.ac}}
+.nb{background:${t.ac};color:${t.nav};padding:7px 18px;border-radius:4px;font-size:12px;font-weight:500;text-transform:uppercase}
+.hero{padding:6rem 2rem 4.5rem;text-align:center;max-width:760px;margin:0 auto}
+.htags{display:flex;gap:7px;justify-content:center;flex-wrap:wrap;margin-bottom:1.25rem}
+.tag{font-size:10px;border:1px solid ${t.ac}55;color:${t.ac};padding:3px 11px;border-radius:20px;letter-spacing:.07em;text-transform:uppercase}
+h1{font-family:'Cormorant Garamond',serif;font-size:clamp(2.2rem,5.5vw,4rem);font-weight:400;line-height:1.15;margin-bottom:1.1rem}
+h1 em{color:${t.ac};font-style:italic}
+.hs{font-size:16px;color:${t.tx}aa;line-height:1.8;margin-bottom:2.25rem;max-width:520px;margin-left:auto;margin-right:auto}
+.hcta{display:inline-block;background:${t.ac};color:${t.nav};padding:13px 32px;border-radius:4px;font-size:13px;font-weight:500;letter-spacing:.06em;text-transform:uppercase}
+.hr2{font-size:12px;color:${t.tx}88;margin-top:1.75rem}
+.stars{color:${t.ac}}
+hr{border:none;border-top:1px solid ${t.ac}1a;margin:0 2rem}
+.about{max-width:720px;margin:4.5rem auto;padding:0 2rem;display:grid;grid-template-columns:1fr 1fr;gap:3.5rem;align-items:center}
+.albl{font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:${t.ac};margin-bottom:.75rem}
+.about h2{font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:400;line-height:1.25;margin-bottom:1rem}
+.about p{font-size:14px;color:${t.tx}bb;line-height:1.85}
+.stats{display:flex;flex-direction:column;gap:1.25rem}
+.stat{border-left:2px solid ${t.ac};padding-left:1rem}
+.sn{font-family:'Cormorant Garamond',serif;font-size:2.2rem;color:${t.ac};line-height:1}
+.sl{font-size:11px;color:${t.tx}88;text-transform:uppercase;letter-spacing:.06em;margin-top:3px}
+.why{background:${t.card};padding:4.5rem 2rem}
+.wi2{max-width:720px;margin:0 auto}
+.slbl{font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:${t.ac};margin-bottom:.6rem}
+.st{font-family:'Cormorant Garamond',serif;font-size:1.9rem;font-weight:400;margin-bottom:2rem}
+.wg{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+.wi{display:flex;gap:10px;align-items:flex-start;padding:.9rem;background:${t.bg};border-radius:5px;font-size:13px;color:${t.tx}bb;line-height:1.6}
+.chk{color:${t.ac};font-weight:700;flex-shrink:0;margin-top:1px}
+.testis{padding:4.5rem 2rem;max-width:860px;margin:0 auto}
+.tg{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;margin-top:1.75rem}
+.tc{background:${t.card};border-radius:7px;padding:1.4rem;border-top:2px solid ${t.ac}}
+.tq{font-size:13px;color:${t.tx}aa;line-height:1.75;font-style:italic;margin-bottom:.9rem}
+.ta{font-size:11px;color:${t.ac};letter-spacing:.06em;text-transform:uppercase}
+.visit{background:${t.card};padding:4.5rem 2rem}
+.vi{max-width:720px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:2.5rem;align-items:start}
+.visit h2{font-family:'Cormorant Garamond',serif;font-size:1.9rem;font-weight:400;margin-bottom:1.25rem}
+.vd{display:flex;gap:10px;margin-bottom:.9rem;font-size:13px;color:${t.tx}aa;line-height:1.6}
+.vc{color:${t.ac};flex-shrink:0}
+.vbox{padding:1.75rem;background:${t.bg};border-radius:7px;text-align:center}
+.vbox h3{font-family:'Cormorant Garamond',serif;font-size:1.3rem;margin-bottom:.4rem}
+.vbox p{font-size:12px;color:${t.tx}aa;margin-bottom:1rem;line-height:1.65}
+.vbtn{display:inline-block;background:${t.ac};color:${t.nav};padding:11px 24px;border-radius:4px;font-size:12px;font-weight:500;text-transform:uppercase}
+footer{padding:1.75rem 2rem;text-align:center;font-size:11px;color:${t.tx}55;border-top:1px solid ${t.ac}1a}
+@media(max-width:640px){.about,.wg,.tg,.vi{grid-template-columns:1fr;gap:1.5rem}.nm{display:none}.hero{padding:3.5rem 1.25rem 2.5rem}}
+</style>
+</head>
+<body>
+<nav>
+  <div class="nl">${data.name}</div>
+  <div class="nm"><a href="#about">About</a><a href="#why">Experience</a><a href="#reviews">Reviews</a><a href="#visit">Visit</a></div>
+  <a href="#visit" class="nb">${copy.cta_text||'Reserve a Table'}</a>
+</nav>
+<section class="hero">
+  <div class="htags">${tags}</div>
+  <h1>${copy.headline||data.name}</h1>
+  <p class="hs">${copy.subheadline||''}</p>
+  <a href="#visit" class="hcta">${copy.cta_text||'Reserve a Table'}</a>
+  ${data.rating?`<div class="hr2"><span class="stars">★★★★★</span> &nbsp; ${data.rating}</div>`:''}
+</section>
+<hr>
+<section class="about" id="about">
+  <div>
+    <div class="albl">Our Story</div>
+    <h2>${data.name}</h2>
+    <p>${copy.about||''}</p>
+  </div>
+  <div class="stats">
+    ${data.rating?`<div class="stat"><div class="sn">${data.rating.split(' ')[0]}★</div><div class="sl">Average Rating</div></div>`:''}
+    <div class="stat"><div class="sn">100%</div><div class="sl">Made with Passion</div></div>
+    ${data.cuisine?`<div class="stat"><div class="sn" style="font-size:1.2rem">${data.cuisine}</div><div class="sl">Cuisine</div></div>`:''}
+  </div>
+</section>
+<section class="why" id="why">
+  <div class="wi2">
+    <div class="slbl">Why Guests Love Us</div>
+    <div class="st">What makes ${data.name} special</div>
+    <div class="wg">${whyItems}</div>
+  </div>
+</section>
+<section class="testis" id="reviews">
+  <div class="slbl">Guest Reviews</div>
+  <div class="st">Straight from our customers</div>
+  <div class="tg">${testis}</div>
+</section>
+<section class="visit" id="visit">
+  <div class="vi">
+    <div>
+      <h2>Find Us</h2>
+      ${data.address?`<div class="vd"><span class="vc">📍</span><span>${data.address}</span></div>`:''}
+      ${data.phone?`<div class="vd"><span class="vc">📞</span><span>${data.phone}</span></div>`:''}
+      <div class="vd"><span class="vc">🕐</span><span>Check Google Maps for current opening hours</span></div>
+    </div>
+    <div class="vbox">
+      <h3>Ready to visit?</h3>
+      <p>We would love to have you. Book in advance to secure your table.</p>
+      <a href="tel:${data.phone||'#'}" class="vbtn">${copy.cta_text||'Reserve a Table'}</a>
+    </div>
+  </div>
+</section>
+<footer>© ${new Date().getFullYear()} ${data.name} · ${data.address||data.city}${data.phone?' · '+data.phone:''}</footer>
+</body></html>`;
+}
+
+function initiatePayment() {
+  const rzpKey  = localStorage.getItem('ms_razorpayKey')||'';
+  const bizName = localStorage.getItem('ms_bizName')||'MenuSite';
+  if (!rzpKey){ alert('Please enter your Razorpay Key ID in Step 1.'); goToPanel(1); return; }
+  try {
+    const rzp = new Razorpay({
+      key: rzpKey, amount: 399900, currency: 'INR',
+      name: bizName, description: 'Restaurant Website — '+restData.name,
+      handler: ()=>goToPanel(5),
+      theme: { color:'#d4a84b' }
+    });
+    rzp.on('payment.failed', r=>alert('Payment failed: '+r.error.description));
+    rzp.open();
+  } catch(e){ alert('Could not open Razorpay. Check your Key ID is correct.'); }
+}
+
+function downloadWebsite() {
+  if (!generatedHTML) return;
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([generatedHTML],{type:'text/html'}));
+  a.download = restData.name.toLowerCase().replace(/\s+/g,'-')+'-website.html';
+  a.click();
+}
+</script>
+</body>
+</html>
