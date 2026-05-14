@@ -37,6 +37,7 @@ body{background:var(--bg);color:var(--cream);font-family:'DM Sans',sans-serif;fo
 .sbox-title{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--gold);margin-bottom:1rem;display:flex;align-items:center;gap:7px}
 .sbox-title::before{content:'';width:5px;height:5px;background:var(--gold);border-radius:50%;flex-shrink:0}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.75rem}
 .field{display:flex;flex-direction:column;gap:5px}
 .field.full{grid-column:1/-1}
 label{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--cream-muted);font-weight:500}
@@ -44,7 +45,7 @@ input,select,textarea{background:var(--bg3);border:1px solid var(--border);borde
 input:focus,select:focus,textarea:focus{border-color:var(--gold)}
 input::placeholder,textarea::placeholder{color:rgba(245,240,232,.25)}
 select option{background:var(--bg3)}
-textarea{resize:vertical;min-height:130px;line-height:1.6}
+textarea{resize:vertical;min-height:100px;line-height:1.6}
 .key-note{font-size:11px;color:var(--cream-muted);margin-top:.6rem;line-height:1.6}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:13px 24px;border-radius:5px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;letter-spacing:.04em;cursor:pointer;border:none;transition:all .2s}
 .btn-primary{background:var(--gold);color:var(--bg);width:100%;padding:15px;font-size:15px}
@@ -73,7 +74,7 @@ textarea{resize:vertical;min-height:130px;line-height:1.6}
 .dot{width:9px;height:9px;border-radius:50%}
 .dot-r{background:#ff5f57}.dot-y{background:#febc2e}.dot-g{background:#28c840}
 .frame-url{flex:1;background:var(--bg2);border-radius:3px;padding:3px 10px;font-size:11px;color:var(--cream-muted);font-family:monospace}
-#previewFrame{width:100%;height:580px;border:none;display:block}
+#previewFrame{width:100%;height:600px;border:none;display:block}
 .pay-wrap{max-width:460px;margin:0 auto}
 .price-card{background:var(--bg2);border:1px solid var(--border-strong);border-radius:10px;padding:1.75rem;text-align:center;margin-bottom:1.25rem;position:relative;overflow:hidden}
 .price-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--gold),var(--gold-light))}
@@ -93,7 +94,11 @@ textarea{resize:vertical;min-height:130px;line-height:1.6}
 .dl-btn{display:inline-flex;align-items:center;gap:9px;background:var(--gold);color:var(--bg);padding:14px 32px;border-radius:6px;font-size:15px;font-weight:500;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;transition:all .2s}
 .dl-btn:hover{background:var(--gold-light);transform:translateY(-2px)}
 .restart-btn{display:block;margin:.75rem auto 0;background:none;border:none;color:var(--cream-muted);font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;text-decoration:underline}
-@media(max-width:600px){.header{padding:1rem 1.25rem}.main{padding:1.5rem 1rem}.grid2{grid-template-columns:1fr}.prev-toolbar{flex-direction:column;align-items:flex-start}}
+.menu-item-row{display:grid;grid-template-columns:1fr auto;gap:.5rem;margin-bottom:.5rem;align-items:center}
+.add-btn{background:rgba(212,168,75,0.15);border:1px dashed var(--border-strong);color:var(--gold);padding:8px;border-radius:5px;cursor:pointer;font-size:12px;width:100%;font-family:'DM Sans',sans-serif;margin-top:.5rem;transition:background .2s}
+.add-btn:hover{background:rgba(212,168,75,0.25)}
+.remove-btn{background:rgba(192,57,43,.2);border:none;color:#e74c3c;width:28px;height:28px;border-radius:4px;cursor:pointer;font-size:14px;flex-shrink:0}
+@media(max-width:600px){.header{padding:1rem 1.25rem}.main{padding:1.5rem 1rem}.grid2,.grid3{grid-template-columns:1fr}.prev-toolbar{flex-direction:column;align-items:flex-start}}
 </style>
 </head>
 <body>
@@ -117,10 +122,11 @@ textarea{resize:vertical;min-height:130px;line-height:1.6}
   <!-- PANEL 1 -->
   <div class="panel active" id="panel1">
     <h1 class="panel-title">Generate a <em>stunning</em><br>restaurant website</h1>
-    <p class="panel-sub">Fill in the details and paste real Google reviews. Claude turns authentic customer words into a beautiful, ready-to-publish website in seconds.</p>
+    <p class="panel-sub">Fill in the details, paste reviews, add the menu and business info. Claude builds a complete professional website in seconds.</p>
 
     <div id="errorBox" class="error-box"></div>
 
+    <!-- API KEYS -->
     <div class="sbox">
       <div class="sbox-title">API Keys — saved in your browser, never shared</div>
       <div class="grid2">
@@ -137,11 +143,12 @@ textarea{resize:vertical;min-height:130px;line-height:1.6}
           <input type="text" id="bizName" placeholder="MenuSite" autocomplete="off">
         </div>
       </div>
-      <p class="key-note">🔒 Keys are stored in your browser only. Your Anthropic key is sent securely to your own backend to call Claude.</p>
+      <p class="key-note">🔒 Keys are stored in your browser only.</p>
     </div>
 
+    <!-- BASIC INFO -->
     <div class="sbox">
-      <div class="sbox-title">Restaurant Details</div>
+      <div class="sbox-title">Restaurant Basic Info</div>
       <div class="grid2">
         <div class="field">
           <label>Restaurant Name ✦</label>
@@ -152,16 +159,16 @@ textarea{resize:vertical;min-height:130px;line-height:1.6}
           <input type="text" id="restaurantCity" placeholder="e.g. Mumbai">
         </div>
         <div class="field full">
-          <label>Address</label>
+          <label>Full Address</label>
           <input type="text" id="restaurantAddress" placeholder="e.g. 4 Mandlik Marg, Colaba, Mumbai 400001">
         </div>
         <div class="field">
-          <label>Phone Number</label>
+          <label>Phone / WhatsApp Number ✦</label>
           <input type="text" id="restaurantPhone" placeholder="+91 98765 43210">
         </div>
         <div class="field">
           <label>Cuisine Type</label>
-          <input type="text" id="cuisineType" placeholder="e.g. North Indian, Italian, Biryani">
+          <input type="text" id="cuisineType" placeholder="e.g. North Indian, Italian">
         </div>
         <div class="field">
           <label>Google Rating</label>
@@ -186,26 +193,94 @@ textarea{resize:vertical;min-height:130px;line-height:1.6}
             <option value="minimal">Clean Minimal</option>
           </select>
         </div>
+      </div>
+    </div>
+
+    <!-- SOCIAL & MAPS -->
+    <div class="sbox">
+      <div class="sbox-title">Social Media & Location</div>
+      <div class="grid2">
+        <div class="field">
+          <label>Instagram URL</label>
+          <input type="text" id="instagram" placeholder="https://instagram.com/yourrestaurant">
+        </div>
+        <div class="field">
+          <label>Facebook URL</label>
+          <input type="text" id="facebook" placeholder="https://facebook.com/yourrestaurant">
+        </div>
         <div class="field full">
-          <label>Paste Google Reviews Here ✦</label>
-          <textarea id="customerReviews" placeholder="Go to Google Maps, search the restaurant, scroll to Reviews, copy and paste 5 to 10 reviews here.
+          <label>Google Maps Embed URL</label>
+          <input type="text" id="mapsEmbed" placeholder="Paste the Google Maps embed link here">
+        </div>
+      </div>
+      <p class="key-note">To get Google Maps embed: Search restaurant on maps.google.com → Share → Embed a map → Copy the src URL from the iframe code</p>
+    </div>
+
+    <!-- OPENING HOURS -->
+    <div class="sbox">
+      <div class="sbox-title">Opening Hours</div>
+      <div class="grid2">
+        <div class="field">
+          <label>Monday - Friday</label>
+          <input type="text" id="hoursWeekday" placeholder="e.g. 11:00 AM - 11:00 PM">
+        </div>
+        <div class="field">
+          <label>Saturday - Sunday</label>
+          <input type="text" id="hoursWeekend" placeholder="e.g. 10:00 AM - 12:00 AM">
+        </div>
+        <div class="field full">
+          <label>Special Hours Note (optional)</label>
+          <input type="text" id="hoursNote" placeholder="e.g. Closed on public holidays">
+        </div>
+      </div>
+    </div>
+
+    <!-- MENU -->
+    <div class="sbox">
+      <div class="sbox-title">Menu Items (add your top dishes)</div>
+      <div id="menuItems">
+        <div class="menu-item-row">
+          <input type="text" placeholder="Dish name e.g. Butter Chicken">
+          <input type="text" placeholder="Price e.g. ₹350" style="width:120px">
+          <button class="remove-btn" onclick="removeMenuItem(this)">×</button>
+        </div>
+        <div class="menu-item-row">
+          <input type="text" placeholder="Dish name e.g. Paneer Tikka">
+          <input type="text" placeholder="Price e.g. ₹280" style="width:120px">
+          <button class="remove-btn" onclick="removeMenuItem(this)">×</button>
+        </div>
+        <div class="menu-item-row">
+          <input type="text" placeholder="Dish name e.g. Biryani">
+          <input type="text" placeholder="Price e.g. ₹320" style="width:120px">
+          <button class="remove-btn" onclick="removeMenuItem(this)">×</button>
+        </div>
+      </div>
+      <button class="add-btn" onclick="addMenuItem()">+ Add another dish</button>
+    </div>
+
+    <!-- REVIEWS -->
+    <div class="sbox">
+      <div class="sbox-title">Paste Google Reviews ✦</div>
+      <div class="field">
+        <textarea id="customerReviews" rows="6" placeholder="Go to Google Maps, search the restaurant, scroll to Reviews, copy and paste 5 to 10 reviews here.
 
 Example:
 Amazing food, the butter chicken was absolutely outstanding! — Rahul S. 5 stars
 Best place in the city for a family dinner. Staff was so welcoming. — Priya M. 5 stars
 Loved the ambiance. The biryani is top notch, will definitely come back! — Ahmed K. 4 stars"></textarea>
-        </div>
       </div>
+      <p class="key-note">More reviews = better website copy. Aim for at least 5.</p>
     </div>
 
     <div class="sbox" style="margin-bottom:1.5rem">
-      <div class="sbox-title">How to copy Google reviews (2 minutes)</div>
-      <ol style="font-size:13px;color:var(--cream-muted);line-height:2.3;padding-left:1.1rem">
-        <li>Open <strong style="color:var(--cream)">maps.google.com</strong> in your browser</li>
-        <li>Search the restaurant name and click on it</li>
-        <li>Scroll down to the <strong style="color:var(--cream)">Reviews</strong> section</li>
-        <li>Copy the text of 5 to 10 reviews and paste into the box above</li>
-      </ol>
+      <div class="sbox-title">Color Theme Selection</div>
+      <div class="grid2">
+        <div class="field full">
+          <label>Website Color Theme</label>
+          <select id="colorTheme2" style="display:none"></select>
+        </div>
+      </div>
+      <p class="key-note">Image slots will be clearly marked in the HTML so you can easily insert photos after download.</p>
     </div>
 
     <button class="btn btn-primary" onclick="startGeneration()">✦ Generate Website — Free Preview</button>
@@ -221,7 +296,7 @@ Loved the ambiance. The biryani is top notch, will definitely come back! — Ahm
         <div class="gen-step" id="gs1"><div class="gen-dot"></div>Reading the reviews</div>
         <div class="gen-step" id="gs2"><div class="gen-dot"></div>Analyzing what customers love most</div>
         <div class="gen-step" id="gs3"><div class="gen-dot"></div>Writing authentic copy with Claude</div>
-        <div class="gen-step" id="gs4"><div class="gen-dot"></div>Building the website layout</div>
+        <div class="gen-step" id="gs4"><div class="gen-dot"></div>Building website with all sections</div>
         <div class="gen-step" id="gs5"><div class="gen-dot"></div>Final polish</div>
       </div>
     </div>
@@ -260,10 +335,13 @@ Loved the ambiance. The biryani is top notch, will definitely come back! — Ahm
         <ul class="price-features">
           <li>Full HTML file — yours forever</li>
           <li>Mobile responsive design</li>
-          <li>Built from your real Google reviews</li>
-          <li>SEO-optimized copy and meta tags</li>
-          <li>Ready to upload to any hosting</li>
-          <li>Free revisions within 7 days</li>
+          <li>Menu section with your dishes</li>
+          <li>Opening hours and contact info</li>
+          <li>Google Maps embed</li>
+          <li>WhatsApp booking button</li>
+          <li>Instagram and Facebook links</li>
+          <li>Image slots ready for your photos</li>
+          <li>SEO-optimized copy from real reviews</li>
         </ul>
       </div>
       <button class="btn btn-green" onclick="initiatePayment()">Pay Rs.3,999 via Razorpay</button>
@@ -277,7 +355,7 @@ Loved the ambiance. The biryani is top notch, will definitely come back! — Ahm
     <div class="success-wrap">
       <div class="success-icon">✓</div>
       <h2 class="success-title">Payment Successful!</h2>
-      <p class="success-sub">Your website is ready to download. Open the HTML file in any browser or upload it to your hosting to go live.</p>
+      <p class="success-sub">Your website is ready. Image slots are clearly marked in the HTML.<br>Replace them with real photos, then upload to go live.</p>
       <button class="dl-btn" onclick="downloadWebsite()">Download Website HTML</button>
       <p style="font-size:12px;color:var(--cream-muted);margin-top:1rem">Tip: Drag the file to <strong style="color:var(--gold)">netlify.com/drop</strong> for a free live URL in 30 seconds.</p>
       <button class="restart-btn" onclick="goToPanel(1)">Generate another restaurant</button>
@@ -291,7 +369,7 @@ let restData = {};
 
 window.addEventListener('load', () => {
   ['anthropicKey','razorpayKey','bizName'].forEach(id => {
-    const v = localStorage.getItem('ms_' + id);
+    const v = localStorage.getItem('ms_'+id);
     if (v) document.getElementById(id).value = v;
   });
 });
@@ -299,7 +377,7 @@ window.addEventListener('load', () => {
 function saveKeys() {
   ['anthropicKey','razorpayKey','bizName'].forEach(id => {
     const v = document.getElementById(id).value.trim();
-    if (v) localStorage.setItem('ms_' + id, v);
+    if (v) localStorage.setItem('ms_'+id, v);
   });
 }
 
@@ -324,26 +402,62 @@ function showError(msg) {
 
 function delay(ms){ return new Promise(r=>setTimeout(r,ms)); }
 
+function addMenuItem() {
+  const container = document.getElementById('menuItems');
+  const row = document.createElement('div');
+  row.className = 'menu-item-row';
+  row.innerHTML = `
+    <input type="text" placeholder="Dish name">
+    <input type="text" placeholder="Price e.g. Rs.350" style="width:120px">
+    <button class="remove-btn" onclick="removeMenuItem(this)">×</button>`;
+  container.appendChild(row);
+}
+
+function removeMenuItem(btn) {
+  const rows = document.querySelectorAll('.menu-item-row');
+  if (rows.length > 1) btn.parentElement.remove();
+}
+
+function getMenuItems() {
+  const rows = document.querySelectorAll('.menu-item-row');
+  const items = [];
+  rows.forEach(row => {
+    const inputs = row.querySelectorAll('input');
+    const name  = inputs[0].value.trim();
+    const price = inputs[1].value.trim();
+    if (name) items.push({ name, price });
+  });
+  return items;
+}
+
 async function startGeneration() {
   const aKey    = document.getElementById('anthropicKey').value.trim();
   const name    = document.getElementById('restaurantName').value.trim();
   const city    = document.getElementById('restaurantCity').value.trim();
   const reviews = document.getElementById('customerReviews').value.trim();
+  const phone   = document.getElementById('restaurantPhone').value.trim();
 
   if (!aKey)    return showError('Please enter your Anthropic API key.');
   if (!name)    return showError('Please enter the restaurant name.');
   if (!city)    return showError('Please enter the city.');
-  if (!reviews) return showError('Please paste some Google reviews — that is what makes the website authentic!');
+  if (!reviews) return showError('Please paste some Google reviews.');
+  if (!phone)   return showError('Please enter the WhatsApp/phone number — needed for the booking button.');
 
   saveKeys();
   restData = {
-    name, city,
+    name, city, phone,
     address:      document.getElementById('restaurantAddress').value.trim(),
-    phone:        document.getElementById('restaurantPhone').value.trim(),
     cuisine:      document.getElementById('cuisineType').value.trim(),
     rating:       document.getElementById('restaurantRating').value.trim(),
     price:        document.getElementById('priceRange').value,
     theme:        document.getElementById('colorTheme').value,
+    instagram:    document.getElementById('instagram').value.trim(),
+    facebook:     document.getElementById('facebook').value.trim(),
+    mapsEmbed:    document.getElementById('mapsEmbed').value.trim(),
+    hoursWeekday: document.getElementById('hoursWeekday').value.trim(),
+    hoursWeekend: document.getElementById('hoursWeekend').value.trim(),
+    hoursNote:    document.getElementById('hoursNote').value.trim(),
+    menuItems:    getMenuItems(),
     reviews,
     anthropicKey: aKey
   };
@@ -360,40 +474,31 @@ async function runGeneration() {
   const setStatus = t => document.getElementById('genStatus').textContent = t;
 
   try {
-    setStep(1,'active'); setStatus('Reading your reviews...');
-    await delay(600); setStep(1,'done');
-
-    setStep(2,'active'); setStatus('Finding patterns in what customers love...');
-    await delay(700); setStep(2,'done');
-
+    setStep(1,'active'); setStatus('Reading your reviews...'); await delay(600); setStep(1,'done');
+    setStep(2,'active'); setStatus('Finding what customers love most...'); await delay(700); setStep(2,'done');
     setStep(3,'active'); setStatus('Claude is writing your copy...');
     const copy = await generateCopy(restData);
     setStep(3,'done');
-
-    setStep(4,'active'); setStatus('Building the website...');
+    setStep(4,'active'); setStatus('Building all sections...');
     await delay(500);
     generatedHTML = buildWebsite(copy, restData);
     setStep(4,'done');
-
-    setStep(5,'active'); setStatus('Adding final polish...');
-    await delay(400); setStep(5,'done');
-    setStatus('Done!');
-    await delay(300);
-
+    setStep(5,'active'); setStatus('Final polish...'); await delay(400); setStep(5,'done');
+    setStatus('Done!'); await delay(300);
     document.getElementById('previewTitle').textContent = restData.name + ' — Website Ready';
-    document.getElementById('frameUrl').textContent = 'menusite.app/preview/' + restData.name.toLowerCase().replace(/\s+/g,'-');
+    document.getElementById('frameUrl').textContent = 'menusite.app/preview/'+restData.name.toLowerCase().replace(/\s+/g,'-');
     document.getElementById('previewFrame').srcdoc = generatedHTML;
     goToPanel(3);
-
   } catch(err) {
     console.error(err);
     goToPanel(1);
-    showError('Error: ' + err.message);
+    showError('Error: '+err.message);
   }
 }
 
 async function generateCopy(data) {
-  const prompt = `You are a world-class restaurant copywriter. Based on the real customer reviews below, write compelling authentic website copy for this restaurant.
+  const menuList = data.menuItems.map(m => m.name + (m.price ? ' — ' + m.price : '')).join(', ');
+  const prompt = `You are a world-class restaurant copywriter. Based on the real customer reviews below, write compelling authentic website copy.
 
 RESTAURANT:
 Name: ${data.name}
@@ -402,6 +507,7 @@ ${data.address ? 'Address: '+data.address : ''}
 ${data.cuisine ? 'Cuisine: '+data.cuisine : ''}
 ${data.rating  ? 'Rating: ' +data.rating  : ''}
 Price: ${data.price}
+${menuList ? 'Menu items: '+menuList : ''}
 
 REAL CUSTOMER REVIEWS:
 ${data.reviews}
@@ -412,6 +518,7 @@ Return ONLY a raw JSON object with no markdown and no code fences:
   "subheadline": "A compelling 15-20 word subheadline based on what customers love most",
   "about": "3 warm inviting sentences about the restaurant using insights from reviews",
   "why_choose": ["Specific reason from reviews 10-15 words","Another specific reason","Third reason","Fourth reason"],
+  "menu_intro": "One warm sentence introducing the menu section",
   "testimonials": [
     {"quote":"Compelling short quote max 20 words","author":"Happy Guest"},
     {"quote":"Another testimonial focusing on food quality","author":"Loyal Customer"},
@@ -422,7 +529,6 @@ Return ONLY a raw JSON object with no markdown and no code fences:
   "tags": ["tag1","tag2","tag3","tag4","tag5"]
 }`;
 
-  // Call our own backend — no CORS issues
   const res = await fetch('/api/generate', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -436,23 +542,50 @@ Return ONLY a raw JSON object with no markdown and no code fences:
 
   const result = await res.json();
   const text = result.text.trim().replace(/```json|```/g,'').trim();
-
-  try {
-    return JSON.parse(text);
-  } catch {
-    throw new Error('Could not parse response. Please try again.');
-  }
+  try { return JSON.parse(text); }
+  catch { throw new Error('Could not parse response. Please try again.'); }
 }
 
 function buildWebsite(copy, data) {
   const themes = {
-    warm:    {bg:'#1a1208',ac:'#d4801a',tx:'#f5e8d0',card:'#2a1e0e',nav:'#0f0a04'},
-    dark:    {bg:'#0a0a08',ac:'#d4a84b',tx:'#f5f0e8',card:'#161612',nav:'#050503'},
-    fresh:   {bg:'#f7fdf4',ac:'#2d7a3a',tx:'#1a2e1c',card:'#eaf7e5',nav:'#1a3320'},
-    bold:    {bg:'#0d0303',ac:'#c0392b',tx:'#f5e8e8',card:'#1a0808',nav:'#080101'},
-    minimal: {bg:'#ffffff',ac:'#2c2c2c',tx:'#1a1a1a',card:'#f5f5f5',nav:'#1a1a1a'}
+    warm:    {bg:'#1a1208',ac:'#d4801a',tx:'#f5e8d0',card:'#2a1e0e',nav:'#0f0a04',aclight:'#e8941f'},
+    dark:    {bg:'#0a0a08',ac:'#d4a84b',tx:'#f5f0e8',card:'#161612',nav:'#050503',aclight:'#e8c97a'},
+    fresh:   {bg:'#f7fdf4',ac:'#2d7a3a',tx:'#1a2e1c',card:'#eaf7e5',nav:'#1a3320',aclight:'#3a9e4a'},
+    bold:    {bg:'#0d0303',ac:'#c0392b',tx:'#f5e8e8',card:'#1a0808',nav:'#080101',aclight:'#e74c3c'},
+    minimal: {bg:'#ffffff',ac:'#2c2c2c',tx:'#1a1a1a',card:'#f5f5f5',nav:'#1a1a1a',aclight:'#444444'}
   };
   const t = themes[data.theme]||themes.dark;
+
+  // WhatsApp number — strip non-digits
+  const waNumber = data.phone.replace(/\D/g,'');
+
+  // Menu items HTML
+  const menuHTML = data.menuItems.length > 0
+    ? data.menuItems.map(item => `
+      <div class="menu-card">
+        <div class="menu-name">${item.name}</div>
+        ${item.price ? `<div class="menu-price">${item.price}</div>` : ''}
+      </div>`).join('')
+    : '<p style="color:'+t.tx+'88;font-size:14px">Menu coming soon — call us for today\'s specials</p>';
+
+  // Hours HTML
+  const hoursHTML = `
+    ${data.hoursWeekday ? `<div class="hours-row"><span>Mon — Fri</span><span>${data.hoursWeekday}</span></div>` : ''}
+    ${data.hoursWeekend ? `<div class="hours-row"><span>Sat — Sun</span><span>${data.hoursWeekend}</span></div>` : ''}
+    ${data.hoursNote    ? `<div class="hours-note">${data.hoursNote}</div>` : ''}
+  `;
+
+  // Social links
+  const socialHTML = `
+    ${data.instagram ? `<a href="${data.instagram}" target="_blank" class="social-btn">Instagram</a>` : ''}
+    ${data.facebook  ? `<a href="${data.facebook}"  target="_blank" class="social-btn">Facebook</a>`  : ''}
+  `;
+
+  // Maps embed
+  const mapsHTML = data.mapsEmbed
+    ? `<iframe src="${data.mapsEmbed}" width="100%" height="300" style="border:0;border-radius:8px" allowfullscreen="" loading="lazy"></iframe>`
+    : `<div style="background:${t.card};border-radius:8px;height:200px;display:flex;align-items:center;justify-content:center;font-size:13px;color:${t.tx}66"><!-- REPLACE WITH GOOGLE MAPS EMBED --><p>Map coming soon</p></div>`;
+
   const whyItems=(copy.why_choose||[]).map(r=>`<div class="wi"><span class="chk">&#10003;</span><span>${r}</span></div>`).join('');
   const testis=(copy.testimonials||[]).map(tc=>`<div class="tc"><p class="tq">"${tc.quote}"</p><p class="ta">&#8212; ${tc.author}</p></div>`).join('');
   const tags=(copy.tags||[]).map(tg=>`<span class="tag">${tg}</span>`).join('');
@@ -469,80 +602,147 @@ function buildWebsite(copy, data) {
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 body{background:${t.bg};color:${t.tx};font-family:'DM Sans',sans-serif;font-weight:300}
 a{color:inherit;text-decoration:none}
+
+/* NAV */
 nav{background:${t.nav};padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:100;border-bottom:1px solid ${t.ac}33}
 .nl{font-family:'Cormorant Garamond',serif;font-size:1.4rem;color:${t.ac}}
 .nm{display:flex;gap:1.5rem;font-size:12px;letter-spacing:.07em;text-transform:uppercase;color:${t.tx}88}
 .nm a:hover{color:${t.ac}}
 .nb{background:${t.ac};color:${t.nav};padding:7px 18px;border-radius:4px;font-size:12px;font-weight:500;text-transform:uppercase}
-.hero{padding:6rem 2rem 4.5rem;text-align:center;max-width:760px;margin:0 auto}
+
+/* HERO */
+/* IMAGE SLOT 1: Replace the background-color below with: background-image: url('your-hero-image.jpg'); background-size: cover; background-position: center; */
+.hero{padding:0;position:relative;min-height:520px;display:flex;align-items:center;justify-content:center;background-color:${t.card};/* IMAGE SLOT 1 — HERO BACKGROUND */}
+.hero-overlay{position:absolute;inset:0;background:linear-gradient(to bottom, ${t.nav}cc, ${t.nav}99)}
+.hero-content{position:relative;z-index:1;text-align:center;padding:4rem 2rem;max-width:760px}
 .htags{display:flex;gap:7px;justify-content:center;flex-wrap:wrap;margin-bottom:1.25rem}
-.tag{font-size:10px;border:1px solid ${t.ac}55;color:${t.ac};padding:3px 11px;border-radius:20px;letter-spacing:.07em;text-transform:uppercase}
-h1{font-family:'Cormorant Garamond',serif;font-size:clamp(2.2rem,5.5vw,4rem);font-weight:400;line-height:1.15;margin-bottom:1.1rem}
+.tag{font-size:10px;border:1px solid ${t.ac}77;color:${t.ac};padding:3px 11px;border-radius:20px;letter-spacing:.07em;text-transform:uppercase}
+h1{font-family:'Cormorant Garamond',serif;font-size:clamp(2.2rem,5.5vw,4rem);font-weight:400;line-height:1.15;margin-bottom:1.1rem;color:#fff}
 h1 em{color:${t.ac};font-style:italic}
-.hs{font-size:16px;color:${t.tx}aa;line-height:1.8;margin-bottom:2.25rem;max-width:520px;margin-left:auto;margin-right:auto}
+.hs{font-size:16px;color:rgba(255,255,255,.8);line-height:1.8;margin-bottom:2.25rem;max-width:520px;margin-left:auto;margin-right:auto}
 .hcta{display:inline-block;background:${t.ac};color:${t.nav};padding:13px 32px;border-radius:4px;font-size:13px;font-weight:500;letter-spacing:.06em;text-transform:uppercase}
-.hr2{font-size:12px;color:${t.tx}88;margin-top:1.75rem}
+.hero-rating{margin-top:1.5rem;font-size:12px;color:rgba(255,255,255,.7)}
 .stars{color:${t.ac}}
+
+/* ABOUT */
 hr{border:none;border-top:1px solid ${t.ac}1a;margin:0 2rem}
-.about{max-width:720px;margin:4.5rem auto;padding:0 2rem;display:grid;grid-template-columns:1fr 1fr;gap:3.5rem;align-items:center}
+.about{max-width:760px;margin:4.5rem auto;padding:0 2rem;display:grid;grid-template-columns:1fr 1fr;gap:3.5rem;align-items:center}
 .albl{font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:${t.ac};margin-bottom:.75rem}
 .about h2{font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:400;line-height:1.25;margin-bottom:1rem}
-.about p{font-size:14px;color:${t.tx}bb;line-height:1.85}
-.stats{display:flex;flex-direction:column;gap:1.25rem}
-.stat{border-left:2px solid ${t.ac};padding-left:1rem}
-.sn{font-family:'Cormorant Garamond',serif;font-size:2.2rem;color:${t.ac};line-height:1}
-.sl{font-size:11px;color:${t.tx}88;text-transform:uppercase;letter-spacing:.06em;margin-top:3px}
+.about p{font-size:14px;color:${t.tx}bb;line-height:1.85;margin-bottom:1rem}
+/* IMAGE SLOT 2: Replace background-color with your about/interior image */
+.about-img{border-radius:8px;overflow:hidden;background-color:${t.card};min-height:280px;display:flex;align-items:center;justify-content:center;font-size:12px;color:${t.tx}44;/* IMAGE SLOT 2 — INTERIOR/ABOUT IMAGE */}
+.about-img img{width:100%;height:100%;object-fit:cover}
+
+/* WHY */
 .why{background:${t.card};padding:4.5rem 2rem}
-.wi2{max-width:720px;margin:0 auto}
+.wi2{max-width:760px;margin:0 auto}
 .slbl{font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:${t.ac};margin-bottom:.6rem}
 .st{font-family:'Cormorant Garamond',serif;font-size:1.9rem;font-weight:400;margin-bottom:2rem}
 .wg{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
 .wi{display:flex;gap:10px;align-items:flex-start;padding:.9rem;background:${t.bg};border-radius:5px;font-size:13px;color:${t.tx}bb;line-height:1.6}
 .chk{color:${t.ac};font-weight:700;flex-shrink:0;margin-top:1px}
+
+/* MENU */
+.menu-section{padding:4.5rem 2rem;max-width:760px;margin:0 auto}
+.menu-intro{font-size:14px;color:${t.tx}99;margin-bottom:2rem;line-height:1.7}
+.menu-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem}
+.menu-card{background:${t.card};border-radius:8px;padding:1.25rem;border-left:3px solid ${t.ac};display:flex;justify-content:space-between;align-items:center;gap:1rem}
+.menu-name{font-size:14px;color:${t.tx};font-weight:400}
+.menu-price{font-size:14px;color:${t.ac};font-weight:500;white-space:nowrap}
+
+/* GALLERY */
+.gallery{background:${t.card};padding:4.5rem 2rem}
+.gallery-inner{max-width:760px;margin:0 auto}
+/* IMAGE SLOTS 3-6: Replace background-color with real food/ambiance photos */
+.gallery-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem;margin-top:1.75rem}
+.gallery-img{border-radius:8px;overflow:hidden;background-color:${t.bg};min-height:200px;display:flex;align-items:center;justify-content:center;font-size:11px;color:${t.tx}33}
+.gallery-img img{width:100%;height:100%;object-fit:cover}
+
+/* TESTIMONIALS */
 .testis{padding:4.5rem 2rem;max-width:860px;margin:0 auto}
 .tg{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;margin-top:1.75rem}
 .tc{background:${t.card};border-radius:7px;padding:1.4rem;border-top:2px solid ${t.ac}}
 .tq{font-size:13px;color:${t.tx}aa;line-height:1.75;font-style:italic;margin-bottom:.9rem}
 .ta{font-size:11px;color:${t.ac};letter-spacing:.06em;text-transform:uppercase}
+
+/* HOURS & VISIT */
 .visit{background:${t.card};padding:4.5rem 2rem}
-.vi{max-width:720px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:2.5rem;align-items:start}
-.visit h2{font-family:'Cormorant Garamond',serif;font-size:1.9rem;font-weight:400;margin-bottom:1.25rem}
+.vi{max-width:760px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:2.5rem}
+.visit h2{font-family:'Cormorant Garamond',serif;font-size:1.9rem;font-weight:400;margin-bottom:1.5rem}
+.hours-row{display:flex;justify-content:space-between;font-size:13px;color:${t.tx}bb;padding:.6rem 0;border-bottom:1px solid ${t.ac}15}
+.hours-note{font-size:12px;color:${t.tx}66;margin-top:.75rem;font-style:italic}
 .vd{display:flex;gap:10px;margin-bottom:.9rem;font-size:13px;color:${t.tx}aa;line-height:1.6}
 .vc{color:${t.ac};flex-shrink:0}
-.vbox{padding:1.75rem;background:${t.bg};border-radius:7px;text-align:center}
-.vbox h3{font-family:'Cormorant Garamond',serif;font-size:1.3rem;margin-bottom:.4rem}
-.vbox p{font-size:12px;color:${t.tx}aa;margin-bottom:1rem;line-height:1.65}
-.vbtn{display:inline-block;background:${t.ac};color:${t.nav};padding:11px 24px;border-radius:4px;font-size:12px;font-weight:500;text-transform:uppercase}
-footer{padding:1.75rem 2rem;text-align:center;font-size:11px;color:${t.tx}55;border-top:1px solid ${t.ac}1a}
-@media(max-width:640px){.about,.wg,.tg,.vi{grid-template-columns:1fr;gap:1.5rem}.nm{display:none}.hero{padding:3.5rem 1.25rem 2.5rem}}
+.social-row{display:flex;gap:.75rem;margin-top:1rem;flex-wrap:wrap}
+.social-btn{background:${t.ac}22;border:1px solid ${t.ac}55;color:${t.ac};padding:7px 16px;border-radius:4px;font-size:12px;text-transform:uppercase;letter-spacing:.06em;transition:background .2s}
+.social-btn:hover{background:${t.ac}44}
+
+/* MAPS */
+.maps-section{padding:3rem 2rem;max-width:760px;margin:0 auto}
+
+/* WHATSAPP FLOATING BUTTON */
+.wa-float{position:fixed;bottom:24px;right:24px;z-index:999;background:#25d366;color:#fff;width:58px;height:58px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(37,211,102,.5);font-size:26px;transition:transform .2s}
+.wa-float:hover{transform:scale(1.1)}
+
+/* FOOTER */
+footer{padding:2rem;text-align:center;font-size:11px;color:${t.tx}55;border-top:1px solid ${t.ac}1a}
+
+@media(max-width:640px){
+  .about,.vi,.wg,.tg,.gallery-grid{grid-template-columns:1fr;gap:1.5rem}
+  .nm{display:none}
+  .hero{min-height:400px}
+}
 </style>
 </head>
 <body>
+
+<!-- WHATSAPP FLOATING BUTTON -->
+<a href="https://wa.me/${waNumber}?text=Hi!%20I%20would%20like%20to%20book%20a%20table%20at%20${encodeURIComponent(data.name)}" target="_blank" class="wa-float" title="Book via WhatsApp">&#128172;</a>
+
 <nav>
   <div class="nl">${data.name}</div>
-  <div class="nm"><a href="#about">About</a><a href="#why">Experience</a><a href="#reviews">Reviews</a><a href="#visit">Visit</a></div>
-  <a href="#visit" class="nb">${copy.cta_text||'Reserve a Table'}</a>
+  <div class="nm">
+    <a href="#about">About</a>
+    <a href="#menu">Menu</a>
+    <a href="#reviews">Reviews</a>
+    <a href="#visit">Visit</a>
+  </div>
+  <a href="https://wa.me/${waNumber}" target="_blank" class="nb">${copy.cta_text||'Book a Table'}</a>
 </nav>
+
+<!-- HERO -->
+<!-- To add hero image: find "IMAGE SLOT 1" in the CSS above and replace background-color with: background-image: url('hero.jpg'); background-size: cover; background-position: center; -->
 <section class="hero">
-  <div class="htags">${tags}</div>
-  <h1>${copy.headline||data.name}</h1>
-  <p class="hs">${copy.subheadline||''}</p>
-  <a href="#visit" class="hcta">${copy.cta_text||'Reserve a Table'}</a>
-  ${data.rating?`<div class="hr2"><span class="stars">★★★★★</span> &nbsp; ${data.rating}</div>`:''}
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <div class="htags">${tags}</div>
+    <h1>${copy.headline||data.name}</h1>
+    <p class="hs">${copy.subheadline||''}</p>
+    <a href="https://wa.me/${waNumber}" target="_blank" class="hcta">${copy.cta_text||'Book a Table'}</a>
+    ${data.rating?`<div class="hero-rating"><span class="stars">★★★★★</span> &nbsp; ${data.rating}</div>`:''}
+  </div>
 </section>
+
 <hr>
+
+<!-- ABOUT -->
+<!-- To add about image: find "IMAGE SLOT 2" in the CSS above and add your image URL -->
 <section class="about" id="about">
   <div>
     <div class="albl">Our Story</div>
     <h2>${data.name}</h2>
     <p>${copy.about||''}</p>
+    <div class="social-row">${socialHTML}</div>
   </div>
-  <div class="stats">
-    ${data.rating?`<div class="stat"><div class="sn">${data.rating.split(' ')[0]}★</div><div class="sl">Average Rating</div></div>`:''}
-    <div class="stat"><div class="sn">100%</div><div class="sl">Made with Passion</div></div>
-    ${data.cuisine?`<div class="stat"><div class="sn" style="font-size:1.2rem">${data.cuisine}</div><div class="sl">Cuisine</div></div>`:''}
+  <div class="about-img">
+    <!-- IMAGE SLOT 2: Add your restaurant interior photo here -->
+    <!-- Replace this div content with: <img src="interior.jpg" alt="${data.name} interior"> -->
+    <span>📷 Add interior photo here</span>
   </div>
 </section>
+
+<!-- WHY -->
 <section class="why" id="why">
   <div class="wi2">
     <div class="slbl">Why Guests Love Us</div>
@@ -550,28 +750,62 @@ footer{padding:1.75rem 2rem;text-align:center;font-size:11px;color:${t.tx}55;bor
     <div class="wg">${whyItems}</div>
   </div>
 </section>
+
+<!-- MENU -->
+<section id="menu">
+  <div class="menu-section">
+    <div class="slbl">Our Menu</div>
+    <div class="st">Signature Dishes</div>
+    <p class="menu-intro">${copy.menu_intro||'Explore our carefully crafted menu, made with the finest ingredients.'}</p>
+    <div class="menu-grid">${menuHTML}</div>
+  </div>
+</section>
+
+<!-- GALLERY -->
+<section class="gallery">
+  <div class="gallery-inner">
+    <div class="slbl">Gallery</div>
+    <div class="st">A Taste of the Experience</div>
+    <div class="gallery-grid">
+      <!-- IMAGE SLOTS 3-6: Replace each div with <img src="your-photo.jpg" alt="food"> -->
+      <div class="gallery-img"><span>📷 Add food photo 1</span></div>
+      <div class="gallery-img"><span>📷 Add food photo 2</span></div>
+      <div class="gallery-img"><span>📷 Add ambiance photo</span></div>
+      <div class="gallery-img"><span>📷 Add food photo 3</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
 <section class="testis" id="reviews">
   <div class="slbl">Guest Reviews</div>
   <div class="st">Straight from our customers</div>
   <div class="tg">${testis}</div>
 </section>
+
+<!-- HOURS & CONTACT -->
 <section class="visit" id="visit">
   <div class="vi">
     <div>
-      <h2>Find Us</h2>
-      ${data.address?`<div class="vd"><span class="vc">📍</span><span>${data.address}</span></div>`:''}
+      <h2>Opening Hours</h2>
+      ${hoursHTML}
+      ${data.address?`<div class="vd" style="margin-top:1.5rem"><span class="vc">📍</span><span>${data.address}</span></div>`:''}
       ${data.phone?`<div class="vd"><span class="vc">📞</span><span>${data.phone}</span></div>`:''}
-      <div class="vd"><span class="vc">🕐</span><span>Check Google Maps for current opening hours</span></div>
     </div>
-    <div class="vbox">
-      <h3>Ready to visit?</h3>
-      <p>We would love to have you. Book in advance to secure your table.</p>
-      <a href="tel:${data.phone||'#'}" class="vbtn">${copy.cta_text||'Reserve a Table'}</a>
+    <div>
+      <h2>Find Us</h2>
+      ${mapsHTML}
     </div>
   </div>
 </section>
-<footer>© ${new Date().getFullYear()} ${data.name} · ${data.address||data.city}${data.phone?' · '+data.phone:''}</footer>
-</body></html>`;
+
+<footer>
+  <p>© ${new Date().getFullYear()} ${data.name} &nbsp;·&nbsp; ${data.address||data.city}${data.phone?' &nbsp;·&nbsp; '+data.phone:''}</p>
+  ${socialHTML ? `<div style="margin-top:.75rem;display:flex;gap:.75rem;justify-content:center">${socialHTML}</div>` : ''}
+</footer>
+
+</body>
+</html>`;
 }
 
 function initiatePayment() {
